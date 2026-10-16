@@ -1,7 +1,4 @@
-MOUSEKEY_ENABLE = yes
-EXTRAKEY_ENABLE = yes
-CONSOLE_ENABLE = yes
-RGBLIGHT_ENABLE = yes
-ENCODER_ENABLE = yes
-LTO_ENABLE = yes
-OLED_DRIVER_ENABLE = yes
+TRI_LAYER_ENABLE = yes
+
+# Elite-C, not a Pro Micro
+BOOTLOADER = atmel-dfu

@@ -13,9 +13,10 @@
 - Numpad uses the normal number keycodes (`KC_1`, not `KC_P1`), so Shift gives the symbols above them.
 - The base layer is fixed. There are no persistent default-layer switch keys (`PDF()` / `set_single_persistent_default_layer`). The old firmware got stuck on a saved QWERTY default layer, and that's the reason.
 - Left dial: volume, press = mute. Right dial: scroll, press = middle click.
-
 - Firmware size 20622/28672 bytes (71%).
-- Unplaced so far: `-`, `=`, `\`, `#`, `?`. `/` is on the base layer's right outer column.
+- LOWER also has `- = #` on the left, `- +` on the right and F12 on the right of row 2; `0` is on the right RCtl thumb. RAISE has Ctrl+Left/Right (word jump) and Home/End on the bottom row.
+- `/` and `?` (Shift+`/`) are on the base layer's right outer column.
+- Unplaced so far: `\`.
 
 ## History
 - The old firmware (the original Dvorak build, made on another PC) was never committed and is lost. The Elite-C bootloader is read-protected, so it couldn't be dumped, and EEPROM writes were refused too.

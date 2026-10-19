@@ -165,6 +165,14 @@ static void animate_luna(void) {
     }
 }
 
+// Shift + Backspace sends Delete
+const key_override_t delete_key_override = ko_make_basic(MOD_MASK_SHIFT, KC_BSPC, KC_DEL);
+
+const key_override_t *key_overrides[] = {
+    &delete_key_override,
+    NULL
+};
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case KC_LCTL:

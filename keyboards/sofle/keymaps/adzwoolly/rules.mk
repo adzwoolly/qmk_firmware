@@ -4,3 +4,4 @@ TRI_LAYER_ENABLE = yes
 BOOTLOADER = atmel-dfu
 
 WPM_ENABLE = yes
+KEY_OVERRIDE_ENABLE = yes

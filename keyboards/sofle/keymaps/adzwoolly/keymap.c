@@ -117,7 +117,8 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 #ifdef OLED_ENABLE
 // Both screens portrait. The right half is mounted upside down relative to the left.
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
-    return is_keyboard_left() ? OLED_ROTATION_270 : OLED_ROTATION_90;
+    //return is_keyboard_left() ? OLED_ROTATION_270 : OLED_ROTATION_270;
+    return OLED_ROTATION_270;
 }
 
 // Same status on both screens, so either one can show the layer.

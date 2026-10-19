@@ -9,6 +9,7 @@ enum layers {
     _LOWER,
     _RAISE,
     _ADJUST,
+    _SKETCH,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -84,7 +85,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,-----------------------------------------.                  ,-----------------------------------------.
  * | Boot |      |      |      |      |      |                  |      |      |      |      |      |      |
  * |------+------+------+------+------+------|                  |------+------+------+------+------+------|
- * |      |      |      |      |      |      |                  |      |      | Vol+ |      |      |      |
+ * |Sketch|      |      |      |      |      |                  |      |      | Vol+ |      |      |      |
  * |------+------+------+------+------+------|                  |------+------+------+------+------+------|
  * |      |      |      |      |      |      |/----\      /----\|      | Prev | Play | Next |      |      |
  * |------+------+------+------+------+------|      |    |      |------+------+------+------+------+------|
@@ -96,16 +97,43 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_ADJUST] = LAYOUT(
   QK_BOOT,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-  XXXXXXX,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                    XXXXXXX, XXXXXXX, KC_VOLU, XXXXXXX, XXXXXXX, XXXXXXX,
+  TG(_SKETCH), XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                  XXXXXXX, XXXXXXX, KC_VOLU, XXXXXXX, XXXXXXX, XXXXXXX,
   XXXXXXX,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                    XXXXXXX, KC_MPRV, KC_MPLY, KC_MNXT, XXXXXXX, XXXXXXX,
   XXXXXXX,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, _______,  _______, XXXXXXX, XXXXXXX, KC_VOLD, XXXXXXX, XXXXXXX, XXXXXXX,
+                     _______, _______, _______, _______, _______,  _______, _______, _______, _______, _______
+),
+/*
+ * SKETCH (toggled from ADJUST, toggle again the same way to leave) - dials steer the mouse like an Etch A Sketch.
+ * Left dial: X, right dial: Y. Pressing the left dial right clicks, pressing the right dial left clicks. Every key falls through to the layers below.
+ */
+[_SKETCH] = LAYOUT(
+  _______,  _______, _______, _______, _______, _______,                    _______, _______, _______, _______, _______, _______,
+  _______,  _______, _______, _______, _______, _______,                    _______, _______, _______, _______, _______, _______,
+  _______,  _______, _______, _______, _______, _______,                    _______, _______, _______, _______, _______, _______,
+  _______,  _______, _______, _______, _______, _______, MS_BTN2,  MS_BTN1, _______, _______, _______, _______, _______, _______,
                      _______, _______, _______, _______, _______,  _______, _______, _______, _______, _______
 ),
 };
 
 #ifdef ENCODER_ENABLE
 // Left dial: volume. Right dial: scroll.
+// In the SKETCH layer, left dial moves the mouse in X and right dial in Y.
+static void nudge_mouse(uint16_t keycode) {
+    mousekey_on(keycode);
+    mousekey_send();
+    mousekey_off(keycode);
+    mousekey_send();
+}
+
 bool encoder_update_user(uint8_t index, bool clockwise) {
+    if (IS_LAYER_ON(_SKETCH)) {
+        if (index == 0) {
+            nudge_mouse(clockwise ? MS_RGHT : MS_LEFT);
+        } else {
+            nudge_mouse(clockwise ? MS_DOWN : MS_UP);
+        }
+        return false;
+    }
     if (index == 0) {
         tap_code(clockwise ? KC_VOLU : KC_VOLD);
     } else {
@@ -210,6 +238,9 @@ bool oled_task_user(void) {
             break;
         case _ADJUST:
             oled_write_P(PSTR("Adj  "), false);
+            break;
+        case _SKETCH:
+            oled_write_P(PSTR("Sketc"), false);
             break;
         default:
             oled_write_P(PSTR("Undef"), false);

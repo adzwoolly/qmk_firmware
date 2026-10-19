@@ -15,3 +15,7 @@
 #define SPLIT_WPM_ENABLE
 #define WPM_SAMPLE_SECONDS 3
 #define SPLIT_TRANSACTION_IDS_USER PET_SYNC
+
+// Pixels the mouse moves per dial click in the SKETCH layer (default 8)
+#undef MOUSEKEY_MOVE_DELTA
+#define MOUSEKEY_MOVE_DELTA 40

@@ -151,7 +151,7 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
 }
 
 // Luna the pet. Sits when idle, walks and runs with typing speed, sneaks while
-// Ctrl is held, jumps on Space and barks while Caps Lock is on.
+// Ctrl is held, jumps on Space and barks while Shift is held.
 #define LUNA_X 0
 #define LUNA_Y 13
 #define LUNA_FRAME_MS 200
@@ -161,6 +161,10 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
 static bool is_sneaking = false;
 static bool is_jumping  = false;
 static bool showed_jump = true;
+
+static bool shift_held(void) {
+    return (get_mods() | get_oneshot_mods()) & MOD_MASK_SHIFT;
+}
 
 static void animate_luna(void) {
     static uint8_t frame = 0;
@@ -180,7 +184,7 @@ static void animate_luna(void) {
     frame = (frame + 1) % 2;
     uint8_t wpm = get_current_wpm();
 
-    if (host_keyboard_led_state().caps_lock) {
+    if (shift_held()) {
         oled_write_raw_P(bark[frame], LUNA_FRAME_SIZE);
     } else if (is_sneaking) {
         oled_write_raw_P(sneak[frame], LUNA_FRAME_SIZE);

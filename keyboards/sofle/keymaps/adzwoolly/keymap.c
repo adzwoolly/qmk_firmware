@@ -122,28 +122,32 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
 }
 
 // Same status on both screens, so either one can show the layer.
+// The screen is 5 characters wide. Every string is padded to 5 and drawn at a
+// fixed row, so a full-width line can't wrap and shift the rows below it.
 bool oled_task_user(void) {
-    oled_write_ln_P(PSTR("Dvrk"), false);
-    oled_write_P(PSTR("\n\n"), false);
-    oled_write_ln_P(PSTR("LAYER"), false);
+    oled_set_cursor(0, 0);
+    oled_write_P(PSTR("Dvrk "), false);
+    oled_set_cursor(0, 3);
+    oled_write_P(PSTR("LAYER"), false);
+    oled_set_cursor(0, 4);
     switch (get_highest_layer(layer_state)) {
         case _DVORAK:
-            oled_write_ln_P(PSTR("Base"), false);
+            oled_write_P(PSTR("Base "), false);
             break;
         case _LOWER:
-            oled_write_ln_P(PSTR("Lower"), false);
+            oled_write_P(PSTR("Lower"), false);
             break;
         case _RAISE:
-            oled_write_ln_P(PSTR("Raise"), false);
+            oled_write_P(PSTR("Raise"), false);
             break;
         case _ADJUST:
-            oled_write_ln_P(PSTR("Adj"), false);
+            oled_write_P(PSTR("Adj  "), false);
             break;
         default:
-            oled_write_ln_P(PSTR("Undef"), false);
+            oled_write_P(PSTR("Undef"), false);
     }
-    oled_write_P(PSTR("\n\n"), false);
-    oled_write_ln_P(PSTR("CAPS"), host_keyboard_led_state().caps_lock);
+    oled_set_cursor(0, 7);
+    oled_write_P(PSTR("CAPS "), host_keyboard_led_state().caps_lock);
     return false;
 }
 #endif

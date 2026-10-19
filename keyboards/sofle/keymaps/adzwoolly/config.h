@@ -10,3 +10,8 @@
 // Send layer and Caps Lock state to the right half so its screen can show them
 #define SPLIT_LAYER_STATE_ENABLE
 #define SPLIT_LED_STATE_ENABLE
+
+// Sync typing speed to the right half so Luna runs there too
+#define SPLIT_WPM_ENABLE
+#define WPM_SAMPLE_SECONDS 3
+#define SPLIT_TRANSACTION_IDS_USER PET_SYNC

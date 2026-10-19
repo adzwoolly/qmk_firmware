@@ -1,6 +1,7 @@
 // Copyright 2026 adzwoolly
 // SPDX-License-Identifier: GPL-2.0-or-later
 #include QMK_KEYBOARD_H
+#include "luna.h"
 
 // Layer numbers must match TRI_LAYER_* in config.h
 enum layers {
@@ -121,6 +122,65 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
     return OLED_ROTATION_270;
 }
 
+// Luna the pet. Sits when idle, walks and runs with typing speed, sneaks while
+// Ctrl is held, jumps on Space and barks while Caps Lock is on.
+#define LUNA_X 0
+#define LUNA_Y 13
+#define LUNA_FRAME_MS 200
+#define LUNA_WALK_WPM 10
+#define LUNA_RUN_WPM 40
+
+static bool is_sneaking = false;
+static bool is_jumping  = false;
+static bool showed_jump = true;
+
+static void animate_luna(void) {
+    static uint8_t frame = 0;
+
+    // Jumping draws one row higher, so clear whichever rows aren't in use
+    if (is_jumping || !showed_jump) {
+        oled_set_cursor(LUNA_X, LUNA_Y + 2);
+        oled_write_P(PSTR("     "), false);
+        oled_set_cursor(LUNA_X, LUNA_Y - 1);
+        showed_jump = true;
+    } else {
+        oled_set_cursor(LUNA_X, LUNA_Y - 1);
+        oled_write_P(PSTR("     "), false);
+        oled_set_cursor(LUNA_X, LUNA_Y);
+    }
+
+    frame = (frame + 1) % 2;
+    uint8_t wpm = get_current_wpm();
+
+    if (host_keyboard_led_state().caps_lock) {
+        oled_write_raw_P(bark[frame], LUNA_FRAME_SIZE);
+    } else if (is_sneaking) {
+        oled_write_raw_P(sneak[frame], LUNA_FRAME_SIZE);
+    } else if (wpm <= LUNA_WALK_WPM) {
+        oled_write_raw_P(sit[frame], LUNA_FRAME_SIZE);
+    } else if (wpm <= LUNA_RUN_WPM) {
+        oled_write_raw_P(walk[frame], LUNA_FRAME_SIZE);
+    } else {
+        oled_write_raw_P(run[frame], LUNA_FRAME_SIZE);
+    }
+}
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case KC_LCTL:
+        case KC_RCTL:
+            is_sneaking = record->event.pressed;
+            break;
+        case KC_SPC:
+            is_jumping = record->event.pressed;
+            if (is_jumping) {
+                showed_jump = false;
+            }
+            break;
+    }
+    return true;
+}
+
 // Same status on both screens, so either one can show the layer.
 // The screen is 5 characters wide. Every string is padded to 5 and drawn at a
 // fixed row, so a full-width line can't wrap and shift the rows below it.
@@ -148,6 +208,12 @@ bool oled_task_user(void) {
     }
     oled_set_cursor(0, 7);
     oled_write_P(PSTR("CAPS "), host_keyboard_led_state().caps_lock);
+
+    static uint32_t anim_timer = 0;
+    if (timer_elapsed32(anim_timer) > LUNA_FRAME_MS) {
+        anim_timer = timer_read32();
+        animate_luna();
+    }
     return false;
 }
 #endif

@@ -21,6 +21,10 @@
 - The old firmware (the original Dvorak build, made on another PC) was never committed and is lost. The Elite-C bootloader is read-protected, so it couldn't be dumped, and EEPROM writes were refused too.
 - This keymap was rewritten from scratch in Oct 2026 against current QMK.
 
+## Install
+1. Compile `qmk compile -kb sofle/rev1 -km adzwoolly`
+2. Install using QMK Toolbox with path `\\wsl.localhost\Ubuntu\home\adzwoolly\code\qmk_firmware\sofle_rev1_adzwoolly.hex`
+
 ## To check
 - [x] Compiled OK (Oct 2026). Build: `qmk compile -kb sofle/rev1 -km adzwoolly`
 - [ ] Right screen orientation: if it's upside down, swap `OLED_ROTATION_90` for `OLED_ROTATION_270` in `oled_init_user`.
